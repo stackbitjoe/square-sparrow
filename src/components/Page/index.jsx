@@ -10,20 +10,40 @@ const Page = (props) => {
 
     const { page: { _id, fields } } = props;
 
-    return (
-        <>
+    let cookiedVariant = props.currentVariant;
+    if(props.selectedVariant) {
+        cookiedVariant = props.selectedVariant;
+    }
+
+    if(!cookiedVariant || cookiedVariant == 0) {
+        return <>
             <Head>
                 <title>{fields.title}</title>
             </Head>
             <main data-sb-object-id={_id}>
-                {fields.sections.map((section, index) => {
+                {fields.sections?.map((section, index) => {
                     const Component = getComponent(section._type);
 
                     return (<Component path={`sections.${index}`} key={`${section.type}-${index}`} {...section} />);
                 })}
             </main>
         </>
-    );
+    } else {
+        return <>
+            <Head>
+                <title>{fields.title}</title>
+            </Head>
+            <main data-sb-object-id={_id}>
+                <div data-sb-field-path={`testSections.${cookiedVariant - 1}`}>
+                {fields.testSections[cookiedVariant - 1].fields.sections.map((section, index) => {
+                    const Component = getComponent(section._type);
+
+                    return (<Component path={`.sections.${index}`} key={`${section.type}-${index}`} {...section} />);
+                })}
+                </div>
+            </main>
+        </>
+    }
 }
 
 export default withHotContentReload(Page);

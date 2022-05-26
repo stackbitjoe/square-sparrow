@@ -1,32 +1,58 @@
 
-import { getPage, getAllPageSlugs } from '../api/cf';
+import { getPage, getAllPageSlugs, getAbTestPage } from '../api/cf';
 import { getComponent } from '../src/components';
+import withVariants from '../src/components/VariantSwap';
 
 const Page = getComponent('Page');
 
-export default Page;
+let COOKIE_NAME = '_gaexp';
 
-export async function getStaticPaths() {
-    const slugs = await getAllPageSlugs();
+export default withVariants(Page);
 
-    const paths = slugs.map((slug) => ({
-        params: {
-            slug,
-        },
-    }));
+// export async function getStaticPaths() {
+//     const slugs = await getAllPageSlugs();
 
-    return {
-        paths,
-        fallback: true,
+//     const paths = slugs.map((slug) => ({
+//         params: {
+//             slug
+//         },
+//     }));
+
+//     return {
+//         paths,
+//         fallback: true,
+//     }
+// }
+
+export async function getServerSideProps(context) {
+    let cookie = context.req.cookies[COOKIE_NAME]
+    let runningExperiement = {};
+
+    if(cookie) {
+      let experiments = cookie.replace('GAX1.1.', '').split('!');
+      experiments.map((experiment, index) => {
+        let details = experiment.split('.');
+        runningExperiement = {
+          id: details[0],
+          variant: details[2]
+        }
+  
+        console.log(runningExperiement);
+      });
     }
-}
 
-export async function getStaticProps({ params }) {
-    const page = await getPage(params.slug);
+
+    let {params} = context;
+    let page = await getPage(params.slug);
+
+    if(!page) {
+        page = await getAbTestPage(params.slug);
+    }
 
     return {
         props: {
             page,
+            selectedVariant: runningExperiement.variant ?? null
         },
     };
 }

@@ -1,6 +1,7 @@
 import { createClient } from 'contentful';
 
 const TYPE_PAGE = 'page';
+const TYPE_ABTEST_PAGE = 'abTestPage';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -25,9 +26,20 @@ export async function getPage(slug) {
     }).then((items) => items.length > 0 ? items[0] : null);
 }
 
+export async function getAbTestPage(slug) {
+    return getEntries(TYPE_ABTEST_PAGE, {
+        'fields.slug': slug
+    }).then((items) => items.length > 0 ? items[0] : null);
+}
+
 export async function getAllPageSlugs() {
-    return getEntries(TYPE_PAGE)
-        .then((pages) => pages.map((page) => page.fields.slug));
+    let pages = await getEntries(TYPE_PAGE)
+    .then((pages) => pages.map((page) => page.fields.slug));
+
+    let abTestPages = await getEntries(TYPE_ABTEST_PAGE)
+    .then((pages) => pages.map((page) => page.fields.slug));
+
+    return (pages).concat(abTestPages);
 }
 
 

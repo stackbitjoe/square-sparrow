@@ -19,3 +19,7 @@ models:
   page:
     type: page
     urlPath: '/{slug}'
+  abTestPage:
+    type: abTestPage
+    urlPath: '/{slug}'
+

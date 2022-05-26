@@ -6,6 +6,7 @@ const components = {
     'ImageSection': dynamic(() => import('./ImageSection')),
     'CtaSection': dynamic(() => import('./CtaSection')),
     'Page': dynamic(() => import('./Page')),
+    'AbTestPage': dynamic(() => import('./Page')),
     'Container': dynamic(() => import('./Container')),
     'Button': dynamic(() => import('./Button')),
     'Card': dynamic(() => import('./Card')),
